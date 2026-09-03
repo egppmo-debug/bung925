@@ -31,6 +31,7 @@ import {
 } from 'lucide-react';
 import { CurrencyInput } from './components/CurrencyInput';
 import { CretopUploadModal } from './components/CretopUploadModal';
+import { InheritanceTaxSavingsCard } from './components/InheritanceTaxSavingsCard';
 
 // --- Data Types ---
 export interface ValuationInput {
@@ -426,9 +427,13 @@ export default function App() {
       <header className="px-3.5 sm:px-8 py-2.5 sm:py-3.5 bg-[#1E293B] text-white border-b-4 border-[#F37321] sticky top-0 z-30 shadow-md no-print">
         <div className="w-full max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 sm:gap-4">
           <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-            {/* Brand Emblem */}
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#F37321] rounded-lg flex items-center justify-center font-bold text-base sm:text-xl text-white shadow-sm shrink-0">
-              H
+            {/* Brand Emblem (Official Hanwha Logo) */}
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg overflow-hidden shadow-sm shrink-0 border border-orange-400/40 bg-[#F37321] flex items-center justify-center">
+              <img
+                src="/logo.svg"
+                alt="한화 로고"
+                className="w-full h-full object-cover"
+              />
             </div>
             <div className="min-w-0">
               {/* Brand and Branch Badge */}
@@ -509,16 +514,23 @@ export default function App() {
       {/* ── PRINT ONLY EXECUTIVE REPORT (Displays on PDF / Print) ── */}
       <div className="print-only p-6 bg-white max-w-5xl mx-auto">
         <div className="border-b-2 border-slate-900 pb-4 mb-4 flex justify-between items-start">
-          <div>
-            <div className="text-[11px] font-extrabold text-orange-600 tracking-wider">
-              HANWHA PEOPLELIFE DAEJEON GLORY BUSINESS UNIT
+          <div className="flex items-start gap-3">
+            <img
+              src="/logo.svg"
+              alt="한화 로고"
+              className="w-12 h-12 rounded-lg object-cover shrink-0 border border-slate-200"
+            />
+            <div>
+              <div className="text-[11px] font-extrabold text-orange-600 tracking-wider">
+                HANWHA PEOPLELIFE DAEJEON GLORY BUSINESS UNIT
+              </div>
+              <h1 className="text-2xl font-black text-slate-900 mt-0.5">
+                비상장주식 가치평가 결과보고서
+              </h1>
+              <p className="text-[11px] text-slate-500">
+                상속세 및 증여세법 제60조, 제63조 및 동법 시행령 제54조(비상장주식의 평가) 기준
+              </p>
             </div>
-            <h1 className="text-2xl font-black text-slate-900 mt-0.5">
-              비상장주식 가치평가 결과보고서
-            </h1>
-            <p className="text-[11px] text-slate-500">
-              상속세 및 증여세법 제60조, 제63조 및 동법 시행령 제54조(비상장주식의 평가) 기준
-            </p>
           </div>
           <div className="text-right text-[11px] text-slate-600 space-y-0.5">
             <div>
@@ -1391,7 +1403,11 @@ export default function App() {
                 </div>
               </div>
 
-
+              {/* ── INHERITANCE TAX SAVINGS PREDICTION CARD (10% ~ 50% RATES) ── */}
+              <InheritanceTaxSavingsCard
+                totalEnterpriseValue={calculations.totalEnterpriseValue}
+                companyName={input.companyName}
+              />
 
               {/* ── CONSULTANT STRATEGY BRIEFING CARD ── */}
               <div className="bg-white rounded-xl p-6 shadow-xs border border-slate-200">
