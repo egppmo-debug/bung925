@@ -2,7 +2,7 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
     <title>한화피플라이프 대전글로리사업단 - 비상장주식가치 평가 솔루션</title>
     <meta name="description" content="한화피플라이프 대전글로리사업단 상증세법 기준 비상장주식가치 평가 및 법인영업 재무 컨설팅 솔루션" />
     <meta property="og:title" content="한화피플라이프 대전글로리사업단 - 비상장주식가치 평가 솔루션" />
@@ -15,6 +15,41 @@
     <meta name="apple-mobile-web-app-title" content="주식평가" />
     <meta name="application-name" content="한화피플라이프 주식평가" />
     <meta name="mobile-web-app-capable" content="yes" />
+
+    <!-- Mobile Safari & WebView compatibility scripts -->
+    <script>
+      // 1. Polyfill Promise.withResolvers for iOS Safari < 17.4 and older mobile WebViews
+      if (typeof Promise !== 'undefined' && typeof Promise.withResolvers === 'undefined') {
+        Promise.withResolvers = function () {
+          var resolve, reject;
+          var promise = new Promise(function (res, rej) {
+            resolve = res;
+            reject = rej;
+          });
+          return { promise: promise, resolve: resolve, reject: reject };
+        };
+      }
+
+      // 2. Unregister broken or stale Service Workers from previous sessions to prevent white screen
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function (registrations) {
+          for (var i = 0; i < registrations.length; i++) {
+            registrations[i].unregister();
+          }
+        }).catch(function () {});
+      }
+
+      // 3. Clear stale CacheStorage caches if any were left by older PWA versions
+      if ('caches' in window) {
+        caches.keys().then(function (keys) {
+          for (var j = 0; j < keys.length; j++) {
+            if (keys[j].indexOf('hanwha-valuation') !== -1) {
+              caches.delete(keys[j]);
+            }
+          }
+        }).catch(function () {});
+      }
+    </script>
 
     <!-- Favicon & PWA Icons -->
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />

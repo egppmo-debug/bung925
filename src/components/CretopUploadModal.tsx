@@ -15,7 +15,7 @@ import {
   FileCheck,
   Check,
 } from 'lucide-react';
-import { extractTextFromPdf, parseCretopReport, ExtractedCretopData } from '../utils/cretopParser';
+import type { ExtractedCretopData } from '../utils/cretopParser';
 import { ValuationInput, formatNumber, formatKoreanUnit } from '../App';
 
 interface CretopUploadModalProps {
@@ -72,7 +72,10 @@ export function CretopUploadModal({ isOpen, onClose, onApply }: CretopUploadModa
     setFileSize((file.size / (1024 * 1024)).toFixed(2) + ' MB');
 
     try {
-      // 1. Extract text page by page from PDF using pdfjs
+      // 1. Dynamically import PDF parser so initial app load is instant and mobile-safe
+      const { extractTextFromPdf, parseCretopReport } = await import('../utils/cretopParser');
+
+      // Extract text page by page from PDF using pdfjs
       const { pages } = await extractTextFromPdf(file);
 
       if (!pages || pages.length === 0 || pages.every((p) => p.trim().length === 0)) {
@@ -132,25 +135,25 @@ export function CretopUploadModal({ isOpen, onClose, onApply }: CretopUploadModa
     }
 
     if (extractedData.valuationDate) partialInput.valuationDate = extractedData.valuationDate;
-    if (extractedData.totalShares !== undefined && extractedData.totalShares !== '') {
+    if (extractedData.totalShares !== undefined && !isNaN(extractedData.totalShares)) {
       partialInput.totalShares = extractedData.totalShares;
     }
-    if (extractedData.faceValue !== undefined && extractedData.faceValue !== '') {
+    if (extractedData.faceValue !== undefined && !isNaN(extractedData.faceValue)) {
       partialInput.faceValue = extractedData.faceValue;
     }
-    if (extractedData.profitYear1 !== undefined && extractedData.profitYear1 !== '') {
+    if (extractedData.profitYear1 !== undefined && !isNaN(extractedData.profitYear1)) {
       partialInput.profitYear1 = extractedData.profitYear1;
     }
-    if (extractedData.profitYear2 !== undefined && extractedData.profitYear2 !== '') {
+    if (extractedData.profitYear2 !== undefined && !isNaN(extractedData.profitYear2)) {
       partialInput.profitYear2 = extractedData.profitYear2;
     }
-    if (extractedData.profitYear3 !== undefined && extractedData.profitYear3 !== '') {
+    if (extractedData.profitYear3 !== undefined && !isNaN(extractedData.profitYear3)) {
       partialInput.profitYear3 = extractedData.profitYear3;
     }
-    if (extractedData.totalAssets !== undefined && extractedData.totalAssets !== '') {
+    if (extractedData.totalAssets !== undefined && !isNaN(extractedData.totalAssets)) {
       partialInput.totalAssets = extractedData.totalAssets;
     }
-    if (extractedData.totalLiabilities !== undefined && extractedData.totalLiabilities !== '') {
+    if (extractedData.totalLiabilities !== undefined && !isNaN(extractedData.totalLiabilities)) {
       partialInput.totalLiabilities = extractedData.totalLiabilities;
     }
 

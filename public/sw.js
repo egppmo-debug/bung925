@@ -1,49 +1,22 @@
-// Hanwha PeopleLife Corporate Valuation PWA Service Worker
-const CACHE_NAME = 'hanwha-valuation-v1';
-const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/manifest.webmanifest',
-  '/favicon.png',
-  '/apple-touch-icon.png',
-  '/icon-192.png',
-  '/icon-512.png',
-  '/logo.svg'
-];
-
+// Self-cleaning Service Worker: deletes old caches and unregisters immediately
+// to prevent mobile white-screen cache locks across app updates.
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
-    }).catch(() => {
-      // Graceful fallback if some assets fail to cache immediately
-    })
-  );
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
-      return Promise.all(
-        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
-      );
+      return Promise.all(keys.map((key) => caches.delete(key)));
+    }).then(() => {
+      return self.registration.unregister();
+    }).then(() => {
+      return self.clients.claim();
     })
   );
-  self.clients.claim();
 });
 
-self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request).catch(() => {
-        // Offline fallback
-        return caches.match('/');
-      });
-    })
-  );
+// Do not intercept network requests - allow direct browser network access
+self.addEventListener('fetch', () => {
+  return;
 });
