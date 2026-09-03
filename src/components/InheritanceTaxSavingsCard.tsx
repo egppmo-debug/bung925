@@ -82,6 +82,7 @@ export const InheritanceTaxSavingsCard: React.FC<InheritanceTaxSavingsCardProps>
 
   // Identify applicable statutory bracket for targetValue
   const applicableStatutoryRate = useMemo(() => {
+    if (targetValue === 0) return '데이터 입력 대기';
     if (targetValue > 3000000000) return '50% (30억 초과 최고세율)';
     if (targetValue > 1000000000) return '40% (10억~30억 구간)';
     if (targetValue > 500000000) return '30% (5억~10억 구간)';

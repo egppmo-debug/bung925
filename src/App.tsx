@@ -59,26 +59,10 @@ export interface SavedSimulation {
   isFloorApplied: boolean;
 }
 
-// Default benchmark values from user specifications
-export const DEFAULT_INPUT: ValuationInput = {
-  companyName: '구상기업',
-  valuationDate: '2026-09-02',
-  totalShares: 20000,
-  faceValue: 10000,
-  weightProfit: 3,
-  weightAsset: 2,
-  discountRate: 10.0,
-  profitYear1: 80670000,
-  profitYear2: 26768000,
-  profitYear3: 46972000,
-  totalAssets: 3089431000,
-  totalLiabilities: 1686694000,
-};
-
-// Completely empty input for entering brand-new company data
-export const EMPTY_INPUT: ValuationInput = {
+// Completely empty/initialized input for entering brand-new company data
+export const INITIAL_INPUT: ValuationInput = {
   companyName: '',
-  valuationDate: '',
+  valuationDate: new Date().toLocaleDateString('en-CA'),
   totalShares: '',
   faceValue: '',
   weightProfit: 3,
@@ -90,6 +74,9 @@ export const EMPTY_INPUT: ValuationInput = {
   totalAssets: '',
   totalLiabilities: '',
 };
+
+export const DEFAULT_INPUT: ValuationInput = INITIAL_INPUT;
+export const EMPTY_INPUT: ValuationInput = INITIAL_INPUT;
 
 // --- Helpers for Korean Currency & Number Formatting ---
 export function formatNumber(num: number | '' | undefined | null): string {
@@ -377,9 +364,9 @@ export default function App() {
   // Copy Summary to Clipboard
   const copySummary = () => {
     const summaryText = `[한화피플라이프 대전글로리사업단 비상장주식가치 평가 결과]
-• 회사명: ${input.companyName}
-• 평가기준일: ${input.valuationDate}
-• 발행주식총수: ${formatNumber(input.totalShares)} 주 (액면가 ${formatNumber(input.faceValue)}원)
+• 회사명: ${input.companyName || '미입력'}
+• 평가기준일: ${input.valuationDate || '미입력'}
+• 발행주식총수: ${input.totalShares ? formatNumber(input.totalShares) + ' 주' : '미입력'} (액면가 ${input.faceValue ? formatNumber(input.faceValue) + '원' : '미입력'})
 ----------------------------------------
 ■ 1주당 순손익가치: ${formatNumber(calculations.profitValuePerShare)} 원
 ■ 1주당 순자산가치: ${formatNumber(calculations.netAssetValuePerShare)} 원
@@ -534,14 +521,15 @@ export default function App() {
           </div>
           <div className="text-right text-[11px] text-slate-600 space-y-0.5">
             <div>
-              <span className="font-bold text-slate-800">평가대상:</span> {input.companyName}
+              <span className="font-bold text-slate-800">평가대상:</span> {input.companyName || '미지정'}
             </div>
             <div>
-              <span className="font-bold text-slate-800">평가기준일:</span> {input.valuationDate}
+              <span className="font-bold text-slate-800">평가기준일:</span> {input.valuationDate || '미지정'}
             </div>
             <div>
               <span className="font-bold text-slate-800">발행주식:</span>{' '}
-              {formatNumber(input.totalShares)}주 (액면가 {formatNumber(input.faceValue)}원)
+              {input.totalShares ? `${formatNumber(input.totalShares)}주` : '-'}{' '}
+              {input.faceValue ? `(액면가 ${formatNumber(input.faceValue)}원)` : ''}
             </div>
             <div>
               <span className="font-bold text-slate-800">작성부서:</span> 한화피플라이프
@@ -598,7 +586,7 @@ export default function App() {
                   회사명 / 기준일
                 </th>
                 <td className="p-2 border-r border-slate-200">
-                  {input.companyName} ({input.valuationDate})
+                  {input.companyName || '미지정'} ({input.valuationDate || '기준일 미지정'})
                 </td>
                 <th className="bg-slate-100 p-2 font-bold w-1/4 border-r border-slate-200">
                   평가 가중치 / 환원율
@@ -643,7 +631,7 @@ export default function App() {
             <span className="font-bold text-slate-700 whitespace-nowrap">실시간 연동 엔진</span>
             <span className="text-slate-300">|</span>
             <span className="text-slate-500 truncate text-[11px] sm:text-xs">
-              대상: <strong className="text-slate-800">{input.companyName}</strong> ({input.valuationDate})
+              대상: <strong className="text-slate-800">{input.companyName || '미입력'}</strong> ({input.valuationDate || '기준일 미지정'})
             </span>
           </div>
 
@@ -1147,7 +1135,12 @@ export default function App() {
                 <div className="flex flex-wrap items-center justify-between gap-2 pb-4 border-b border-slate-700/80 mb-5 print:border-slate-200">
                   {/* 80% Floor Badge (Dynamic) - Starts with 가중평균가액 정상 적용 */}
                   <div className="flex items-center space-x-2">
-                    {calculations.isFloorApplied ? (
+                    {calculations.finalValuePerShare === 0 && (!input.totalShares || input.totalShares === 0) ? (
+                      <div className="bg-slate-700/90 text-xs font-bold px-3 py-1.5 rounded-full shadow-md flex items-center gap-2 text-slate-300 print:bg-slate-100 print:text-slate-700 print:border-slate-300">
+                        <div className="w-2 h-2 bg-slate-400 rounded-full"></div>
+                        <span>평가 기초데이터 입력 대기</span>
+                      </div>
+                    ) : calculations.isFloorApplied ? (
                       <div className="bg-[#F37321] text-xs font-bold px-3 py-1.5 rounded-full shadow-md flex items-center gap-2 animate-pulse print:bg-amber-100 print:text-amber-900 print:border-amber-300">
                         <div className="w-2 h-2 bg-white rounded-full"></div>
                         <span>순자산 80% 하한선 규정 적용</span>
@@ -1171,11 +1164,8 @@ export default function App() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-center">
                   {/* KPI 1: 최종 1주당 평가액 */}
                   <div className="bg-slate-800/90 rounded-xl p-5 border border-slate-700 shadow-inner print:bg-slate-50 print:border-slate-300 print:shadow-none">
-                    <div className="text-xs font-semibold text-slate-400 mb-1 flex items-center justify-between print:text-slate-600">
+                    <div className="text-xs font-semibold text-slate-400 mb-1 print:text-slate-600">
                       <span>최종 1주당 평가액 (Max 기준)</span>
-                      <span className="text-[10px] text-[#F37321] font-mono print:text-orange-600 font-bold">
-                        액면가 {formatNumber(input.faceValue)}원 대비
-                      </span>
                     </div>
                     <div className="flex items-baseline space-x-2">
                       <span className="text-3xl sm:text-4xl font-black tracking-tight text-white font-mono print:text-slate-900">
@@ -1184,9 +1174,13 @@ export default function App() {
                       <span className="text-base font-bold text-[#F37321] print:text-orange-600">원 / 주</span>
                     </div>
                     <div className="mt-2 text-xs flex items-center justify-between text-slate-300 pt-2 border-t border-slate-700/60 print:border-slate-200 print:text-slate-700">
-                      <span>액면가 대비 배율</span>
+                      <span>
+                        액면가 {input.faceValue ? `${formatNumber(input.faceValue)}원` : '0원'} 대비
+                      </span>
                       <span className="font-extrabold text-[#F37321] font-mono text-sm print:text-amber-700">
-                        {calculations.faceMultiple.toFixed(2)} 배
+                        {input.faceValue && calculations.faceMultiple > 0
+                          ? `${calculations.faceMultiple.toFixed(2)} 배`
+                          : '- 배'}
                       </span>
                     </div>
                   </div>
