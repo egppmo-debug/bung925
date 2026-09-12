@@ -15,7 +15,6 @@ interface SecurityLockGateProps {
 export const SecurityLockGate: React.FC<SecurityLockGateProps> = ({ onUnlock }) => {
   const [passcode, setPasscode] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isShaking, setIsShaking] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -49,7 +48,7 @@ export const SecurityLockGate: React.FC<SecurityLockGateProps> = ({ onUnlock }) 
     if (verifyPassword(passcode)) {
       setErrorMsg(null);
       setIsSuccess(true);
-      setAuthenticated(rememberMe);
+      setAuthenticated();
       setTimeout(() => {
         onUnlock();
       }, 400);
@@ -115,27 +114,34 @@ export const SecurityLockGate: React.FC<SecurityLockGateProps> = ({ onUnlock }) 
           }}
         >
           {/* Logo & Header */}
-          <div className="text-center mb-6">
-            <div className="w-14 h-14 mx-auto rounded-xl bg-[#F37321] p-1.5 shadow-lg shadow-orange-500/20 flex items-center justify-center mb-3">
-              <img
-                src="/logo.svg"
-                alt="한화 로고"
-                className="w-full h-full object-cover rounded-lg"
-              />
+          <div className="mb-6">
+            <div className="flex items-center justify-center gap-3">
+              {/* Brand Emblem (Logo on the left) */}
+              <div className="w-12 h-12 rounded-xl bg-[#F37321] p-1.5 shadow-lg shadow-orange-500/20 flex items-center justify-center shrink-0">
+                <img
+                  src="/logo.svg"
+                  alt="한화 로고"
+                  className="w-full h-full object-cover rounded-lg"
+                />
+              </div>
+
+              {/* Company & Branch Name */}
+              <div className="text-left min-w-0">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <h1 className="text-lg font-black text-white tracking-tight">
+                    한화피플라이프
+                  </h1>
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-orange-500/20 text-[#F37321] border border-orange-500/40 whitespace-nowrap">
+                    대전글로리사업단
+                  </span>
+                </div>
+                <h2 className="text-xs font-semibold text-slate-300 mt-0.5">
+                  비상장주식 시가평가 솔루션
+                </h2>
+              </div>
             </div>
 
-            <div className="flex items-center justify-center gap-1.5 mb-1">
-              <h1 className="text-lg font-black text-white tracking-tight">
-                한화피플라이프
-              </h1>
-              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-orange-500/20 text-[#F37321] border border-orange-500/40">
-                대전글로리사업단
-              </span>
-            </div>
-            <h2 className="text-sm font-semibold text-slate-300">
-              비상장주식 시가평가 솔루션
-            </h2>
-            <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+            <p className="text-center text-xs text-slate-400 mt-3 leading-relaxed">
               본 시스템은 사업단 내부 전용 솔루션입니다.<br />
               접근을 위해 보안 비밀번호(PIN)를 입력해 주세요.
             </p>
@@ -232,19 +238,6 @@ export const SecurityLockGate: React.FC<SecurityLockGateProps> = ({ onUnlock }) 
                   <Delete className="w-4 h-4" />
                 </button>
               </div>
-            </div>
-
-            {/* Remember Me Checkbox */}
-            <div className="pt-2 flex items-center justify-between">
-              <label className="flex items-center space-x-2 cursor-pointer text-xs text-slate-300">
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 rounded text-[#F37321] focus:ring-[#F37321] focus:ring-offset-slate-800 bg-slate-900 border-slate-600 accent-[#F37321]"
-                />
-                <span>이 기기에서 로그인 유지 (자동 접속)</span>
-              </label>
             </div>
 
             {/* Submit Button */}

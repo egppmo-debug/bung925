@@ -235,25 +235,15 @@ export const getStoredPassword = getStoredUserPassword;
 export const saveNewPassword = saveNewUserPassword;
 export const DEFAULT_PASSCODE = DEFAULT_USER_PASSCODE;
 
-// Session authentication state
+// Session authentication state (Auto-login disabled: app always starts with lock screen)
 export function isUserAuthenticated(): boolean {
-  try {
-    const local = localStorage.getItem(AUTH_SESSION_KEY);
-    const session = sessionStorage.getItem(AUTH_SESSION_KEY);
-    return local === 'true' || session === 'true';
-  } catch {
-    return false;
-  }
+  return false;
 }
 
-export function setAuthenticated(remember: boolean): void {
+export function setAuthenticated(_remember?: boolean): void {
   try {
-    sessionStorage.setItem(AUTH_SESSION_KEY, 'true');
-    if (remember) {
-      localStorage.setItem(AUTH_SESSION_KEY, 'true');
-    } else {
-      localStorage.removeItem(AUTH_SESSION_KEY);
-    }
+    localStorage.removeItem(AUTH_SESSION_KEY);
+    sessionStorage.removeItem(AUTH_SESSION_KEY);
   } catch {
     // ignore
   }

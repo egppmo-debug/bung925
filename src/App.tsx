@@ -171,7 +171,7 @@ export default function App() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [showPrintModal, setShowPrintModal] = useState<boolean>(false);
   const [showCretopModal, setShowCretopModal] = useState<boolean>(false);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => isUserAuthenticated());
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [showSecurityModal, setShowSecurityModal] = useState<boolean>(false);
 
   const showToast = (msg: string) => {
