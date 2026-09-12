@@ -1,0 +1,6 @@
+{
+  "name": "비상장주식가치 평가 솔루션",
+  "description": "한화피플라이프 대전글로리사업단 상증세법 기준 비상장주식가치 평가 및 법인영업 재무 컨설팅 솔루션",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

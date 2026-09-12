@@ -1,0 +1,10 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Security and Passcode config document
+    match /settings/security {
+      allow read: if true;
+      allow write: if true;
+    }
+  }
+}
